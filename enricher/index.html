@@ -1,0 +1,276 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>Event Enricher</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+
+<link rel="stylesheet" type="text/css" href="static/media_style.css" />
+<link rel="stylesheet" type="text/css" href="static/style.css"/>
+<!-- styles needed by jScrollPane -->
+<link type="text/css" href="static/jquery.jscrollpane.css" rel="stylesheet" media="all" />
+
+<meta charset="UTF-8">
+<script type="text/javascript" src="static/jquery-1.7.2.min.js"></script> 
+
+<script type="text/javascript">
+	function queryevent()
+	{
+		var input_string = $("#search").val();
+		$("#mediaresults").empty();
+		jQuery.ajax({
+							type: "POST",
+							data: {textfield : input_string,
+							query:'event'},
+							success: function(data) {
+							var event = jQuery.parseJSON(data);
+							$("#nevigation").append('<LI style="margin-bottom: 15px"><a onclick="showevent();">Event Info</a>');
+							
+							$("#nevigation").append('<div style="margin-bottom: 10px;margin-left: 12px;font-size:10pt;color:rgb(255,153,204)"><font color="black"> Title:   </font>' + event.title + '<br><font color="black"> Venue: </font>' + event.venue + '<br><font color="black"> Time:  </font> ' + event.stime + '</div>');
+							
+							$("#mediaresults").append('<iframe zoom="0.75" overflow="hidden" src="' + event.originalurl +'" height="100%" width="100%"></iframe>');
+							
+							},
+							});
+	}
+	function showevent()
+	{
+		var input_string = $("#search").val();
+		$("#mediaresults").empty();
+		jQuery.ajax({
+							type: "POST",
+							data: {textfield : input_string,
+							query:'event'},
+							success: function(data) {
+							var event = jQuery.parseJSON(data);
+							$("#mediaresults").append('<iframe zoom="0.75" overflow="hidden" src="' + event.originalurl +'" height="100%" width="100%"></iframe>');
+							
+							},
+							});
+	}
+	function querybymachinetag()
+	{
+		var input_string = $("#search").val();
+		$("#mediaresults").empty();
+			jQuery.ajax({
+							type: "POST",
+							data: {textfield : input_string,
+							query:'machinetag'},
+							success: function(data) {
+							var table = jQuery.parseJSON(data);
+							$.each(table.photos, function(i,item){							
+							$("#mediaresults").append('<div class="imgbox"> <a href="'+item.photo+'" rel="single" class="pirobox" title=""><img class="thumbnail" src="'+item.photo+'" width="135" height="135"></a></div>');
+							}
+							);	  
+							},
+							});
+	
+	}
+	function querybytitle()
+	{
+		var input_string = $("#search").val();
+		$("#mediaresults").empty();
+			jQuery.ajax({
+							type: "POST",
+							data: {textfield : input_string,
+							query:'title'},
+							success: function(data) {
+							var table = jQuery.parseJSON(data);
+							$.each(table.photos, function(i,item){
+							
+							$("#mediaresults").append('<div class="imgbox"> <a href="'+item.photo+'" rel="single" class="pirobox" title=""><img class="thumbnail" src="'+item.photo+'" width="135" height="135"></a></div>');
+							}
+							);	  
+							},
+							});
+	
+	}
+	function querybygeo()
+	{
+		var input_string = $("#search").val();
+		$("#mediaresults").empty();
+			jQuery.ajax({
+							type: "POST",
+							data: {textfield : input_string,
+							query:'geo'},
+							success: function(data) {
+							var table = jQuery.parseJSON(data);
+							$.each(table.photos, function(i,item){
+							
+							$("#mediaresults").append('<div class="imgbox"> <a href="'+item.photo+'" rel="single" class="pirobox" title=""><img class="thumbnail" src="'+item.photo+'" width="135" height="135"></a></div>');
+							}
+							);	  
+							},
+							});
+	
+	}
+	
+	function finalresult()
+	{
+		var input_string = $("#search").val();
+		$("#mediaresults").empty();
+		jQuery.ajax({
+							type: "POST",
+							data: {textfield : input_string,
+							query:'final'},
+							success: function(data) {
+							var table = jQuery.parseJSON(data);
+							$.each(table.photos, function(i,item){
+							
+							$("#mediaresults").append('<div class="imgbox"> <a href="'+item.photo+'" rel="single" class="pirobox" title=""><img class="thumbnail" src="'+item.photo+'" width="135" height="135"></a></div>');
+							}
+							);	  
+							},
+							});
+	
+	}
+	
+    jQuery(document).ready(function() {
+	$("#submit").click(function() {
+		$(".textresults").remove();
+		$("#nevigation").empty();
+		$("#mediaresults").empty();
+		$("#illustration").empty();
+		$("#nevigation").empty();
+		var input_string = $("#search").val();
+		queryevent();
+	
+		var Funlist=[
+			function()
+			{
+				var input_string = $("#search").val();
+				jQuery.ajax({type: "POST",
+									data: {textfield : input_string,
+									query:'machinetag'},
+									success: function(data) { 
+									var table = jQuery.parseJSON(data);
+									$("#nevigation").append('<LI style="margin-bottom: 12px"><a onclick="querybymachinetag();">Illustration</a>');	
+				$("#illustration").append('<LI style="margin-bottom: 10px;margin-left: 12px;font-size: 13px;"><a onclick="querybymachinetag();">Query by Machine Tag' + '<font color="black"> (' + table.number + ')</font></a>');	
+									},
+									});
+				nextone();
+			},
+			function()
+			{
+				var input_string = $("#search").val();			
+				jQuery.ajax({type: "POST",
+									data: {textfield : input_string,
+									query:'title'},
+									success: function(data) { 
+									var table = jQuery.parseJSON(data);
+									$("#illustration").append('<LI style="margin-bottom: 10px;margin-left: 15px;font-size: 13px;"><a onclick="querybytitle();">Query by Title' + '<font color="black"> (' + table.number + ')</font></a>');	
+									},
+									});
+				nextone();
+			},
+			function()
+			{
+				var input_string = $("#search").val();					
+				jQuery.ajax({type: "POST",
+									data: {textfield : input_string,
+									query:'geo'},
+									success: function(data) { 
+									var table = jQuery.parseJSON(data);
+									$("#illustration").append('<LI style="margin-bottom: 10px;margin-left: 15px;font-size: 13px;"><a onclick="querybygeo();">Query by Geo' + '<font color="black"> (' + table.number + ')</font></a>');	
+									},
+									});
+				nextone();
+			},
+			function()
+			{
+				var input_string = $("#search").val();			
+				jQuery.ajax({type: "POST",
+									data: {textfield : input_string,
+									query:'final'},
+									success: function(data) { 
+									var table = jQuery.parseJSON(data);
+									$("#illustration").append('<LI style="margin-bottom: 10px;margin-left: 15px;font-size: 13px;"><a onclick="finalresult();">Final Results' + '<font color="black"> (' + table.number + ')</font></a>');	
+									},
+									});
+				nextone();
+			}
+		];
+		$('#mediapanel').queue('FunList',Funlist);
+		var nextone=function(){
+			$('#mediapanel').dequeue('FunList');
+		};
+		nextone();
+
+		
+		return false;
+	});
+
+});
+
+</script>
+						
+</head>
+
+<body>
+<div id="mediaItemDescriptionPanel" style="">
+		<div id="descriptionHeader" style="height:100px;">
+			<div id="dateDescription">
+				23-08-2012 02:11p.m
+			</div>
+			<div id="platformIcon">
+					<img id="iconpanel" src="images/platforms/googleplus-icon.png">
+			</div>
+		</div>
+		<div id="textualDescription" style="height: 415px; overflow: hidden; padding: 0px; width: 120px; "> 
+			<div class="jspContainer" style="width: 120px; height: 415px; ">
+				<div class="jspPane" style="padding: 15px; top: 0px; width: 90px; "><p> </p>
+				</div>
+			</div>
+		</div>
+
+</div>
+	
+<div id="header">
+		<div id="title">
+			<div class="gradient4">
+				<h1>
+					<span></span>Event Enricher
+				</h1>
+				<h2>Find Media data to Illustrate Event</h2>
+			</div>
+		</div>
+		<div id="contact">
+
+		</div>
+</div>
+
+<div align="center">
+<form id="searchbox" method="post"> 
+<input type="text" placeholder="Type here" id="search" name="bax" value="http://data.linkedevents.org/event/8b05db5e-afb0-4eaf-9ade-fd2fba7ca4ff" />
+<input id="submit" type="submit" value="Search"/>    </form>
+</div>
+<div>
+
+
+<div id="mediapanel">
+	<div class="clear">
+		<div id="facets">
+					<UL id = "nevigation">
+					</UL>
+					<UL id = "nothing">
+					</UL>
+					<UL id="illustration"> </UL>
+		</div>
+		<div style="display: inline; float: right;">
+		<div id="mediaresults">
+			<p class="textresults"></p>
+		</div>
+		</div>
+	</div>
+</div>
+</div>
+
+	<div id="footer" style="display: block; height: 0px;" class="clear">
+		<div id="place">
+			<div>CopyRight:<h3>Eurecom<h3>
+			</div>
+		</div>
+	</div>
+	
+</body>
+</html>
